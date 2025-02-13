@@ -3,9 +3,9 @@ var notificationMenu = (function () {
     var util = {
         featureDetails: {
             name: "APEX Notification Menu",
-            scriptVersion: "1.6.5",
-            utilVersion: "1.4",
-            url: "https://github.com/RonnyWeiss",
+            scriptVersion: "1.0.0",
+            utilVersion: "1.0",
+            url: "https://github.com/quiccoli",
             license: "MIT"
         },
         escapeHTML: function (str) {
@@ -388,6 +388,35 @@ var notificationMenu = (function () {
                 var str = "";
                 var ul;
                 var isRefresh = false;
+                var divTop;               
+                
+                if (configJSON.headerTopText){
+                    configJSON.headerTopText = escapeOrSanitizeHTML(configJSON.headerTopText);
+                    configJSON.headerTopLink = escapeOrSanitizeHTML(configJSON.headerTopLink);                    
+                    
+                    var divTopLeft;
+                    var divTopRigth;
+                    
+                    divTop = $("<div></div>");
+                    divTop.addClass("menu-top");
+                    
+                    divTopLeft = $("<div></div>");
+                    divTopLeft.addClass("menu-top-left");
+
+                    divTopRigth = $("<div></div>");
+                    divTopRigth.addClass("menu-top-right");
+                    
+                    if (configJSON.headerTopLink){
+                       var aDiv = $("<a></a>");
+                       aDiv.attr("href", configJSON.headerTopLink);   
+                       aDiv.append(configJSON.headerTopText);                     
+                    }
+
+                    divTopRigth.append(aDiv);
+                    divTop.append(divTopLeft);
+                    divTop.append(divTopRigth);                  
+                }
+
                 if ($("#" + elementID + "_ul").length) {
                     ul = $("#" + elementID + "_ul");
                     isRefresh = true;
@@ -401,6 +430,8 @@ var notificationMenu = (function () {
                 if (isRefresh && configJSON.hideOnRefresh && $(ul).hasClass("toggleList") === false) {
                     $(ul).addClass("toggleList");
                 }
+
+                ul.append(divTop); 
 
                 if (dataJSON.row) {
                     $.each(dataJSON.row, function (item, data) {
@@ -472,6 +503,21 @@ var notificationMenu = (function () {
                         if (data.NOTE_TEXT) {
                             data.NOTE_TEXT = escapeOrSanitizeHTML(data.NOTE_TEXT);
                         }
+                        if (data.NOTE_DATE) {
+                            data.NOTE_DATE = escapeOrSanitizeHTML(data.NOTE_DATE);
+                        }    
+                        if (data.ACCEPT_ICON) {
+                            data.ACCEPT_ICON = escapeOrSanitizeHTML(data.ACCEPT_ICON);
+                        }
+                        if (data.ACCEPT_ICON_COLOR) {
+                            data.ACCEPT_ICON_COLOR = escapeOrSanitizeHTML(data.ACCEPT_ICON_COLOR);
+                        }
+                        if (data.DECLINE_ICON) {
+                            data.DECLINE_ICON = escapeOrSanitizeHTML(data.DECLINE_ICON);
+                        }
+                        if (data.DECLINE_ICON_COLOR) {
+                            data.DECLINE_ICON_COLOR = escapeOrSanitizeHTML(data.DECLINE_ICON_COLOR);
+                        }
 
                         var a = $("<a></a>");
 
@@ -491,6 +537,13 @@ var notificationMenu = (function () {
                             li.css("box-shadow", "-5px 0 0 0 " + data.NOTE_COLOR);
                         }
 
+                        if (data.NOTE_DATE) {
+                            var noteDate = $("<div></div>");
+                            noteDate.addClass("note-date");
+                            noteDate.append(data.NOTE_DATE);
+                            li.append(noteDate);
+                        }
+
                         if (data.NOTE_ACCEPT || data.NOTE_DECLINE) {
                             li.css("padding-right", "32px");
 
@@ -501,8 +554,8 @@ var notificationMenu = (function () {
 
                                 var acceptI = $("<i></i>");
                                 acceptI.addClass("fa");
-                                acceptI.addClass(configJSON.accept.icon);
-                                acceptI.css("color", configJSON.accept.color);
+                                acceptI.addClass(data.ACCEPT_ICON ? data.ACCEPT_ICON : configJSON.accept.icon);
+                                acceptI.css("color",data.ACCEPT_ICON_COLOR ? data.ACCEPT_ICON_COLOR : configJSON.accept.color);
                                 acceptI.css("font-size", "20px");
                                 acceptA.append(acceptI);
 
@@ -518,8 +571,8 @@ var notificationMenu = (function () {
 
                                 var declineI = $("<i></i>");
                                 declineI.addClass("fa");
-                                declineI.addClass(configJSON.decline.icon);
-                                declineI.css("color", configJSON.decline.color);
+                                declineI.addClass(data.DECLINE_ICON ? data.DECLINE_ICON : configJSON.decline.icon);
+                                declineI.css("color",data.DECLINE_ICON_COLOR ? data.DECLINE_ICON_COLOR : configJSON.decline.color);
                                 declineI.css("font-size", "24px");
                                 declineA.append(declineI);
 
